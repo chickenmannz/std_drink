@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <title>Price per Standard Drink Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transform: scale(2);
+            transform-origin: top;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        angular.module('myApp', []).controller('myController', function($scope) {
+            $scope.calculatePricePerStandardDrink = function() {
+                var vesselSize = parseFloat($scope.vesselSize);
+                var alcoholPercentage = parseFloat($scope.alcoholPercentage);
+                var numberOfVessels = parseInt($scope.numberOfVessels);
+                var totalPrice = parseFloat($scope.totalPrice);
+
+                var totalAlcoholVolume = vesselSize * alcoholPercentage * numberOfVessels / 100;
+                var totalStandardDrinks = totalAlcoholVolume / 12.7;
+                var pricePerStandardDrink = totalPrice / totalStandardDrinks;
+
+                $scope.result = "Price per Standard Drink: $" + pricePerStandardDrink.toFixed(2);
+            };
+
+            $scope.$watchGroup(['vesselSize', 'alcoholPercentage', 'numberOfVessels', 'totalPrice'], function(newValues) {
+                var filledFields = newValues.every(function(value) {
+                    return value !== undefined && value !== null && value !== '';
+                });
+
+                if (filledFields) {
+                    $scope.calculatePricePerStandardDrink();
+                } else {
+                    $scope.result = '';
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Price per Standard Drink Calculator</h1>
+    <div ng-controller="myController">
+        <form>
+            <label for="vesselSize">Vessel Size (in ml):</label>
+            <input type="number" id="vesselSize" ng-model="vesselSize" min="0" required>
+            
+            <label for="alcoholPercentage">Alcohol Percentage:</label>
+            <input type="number" id="alcoholPercentage" ng-model="alcoholPercentage" min="0" max="100" required>
+            
+            <label for="numberOfVessels">Number of Vessels:</label>
+            <input type="number" id="numberOfVessels" ng-model="numberOfVessels" min="0" required>
+            
+            <label for="totalPrice">Total Price (in NZD):</label>
+            <input type="number" id="totalPrice" ng-model="totalPrice" min="0" required>
+        </form>
+        
+        <p id="result">{{ result }}</p>
+    </div>
+</body>
+</html>
